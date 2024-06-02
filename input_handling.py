@@ -1,7 +1,4 @@
-class Card:
-    def __init__(self, rank, suit):
-        self.rank = rank
-        self.suit = suit
+from Card import *
 
 def dealer_input():
     dealer_rank = input("Enter the dealer's card rank: ")

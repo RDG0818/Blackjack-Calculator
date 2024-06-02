@@ -1,4 +1,4 @@
-import input_handling
+from Card import *
 
 def card_value(rank):
     if rank in "23456789":
