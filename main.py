@@ -1,4 +1,10 @@
-from functions import *
-dealer_card = dealer_input()
-player_hand = create_hand()
-print(str(round(chance_of_bust(dealer_card, player_hand) * 100, 3)) + '%')
+from BlackjackProbabilityCalculator import *
+
+blackjack = BlackjackProbabilityCalculator()
+blackjack.get_initial_hands()
+blackjack.player.hit(blackjack.deck)
+blackjack.player.hit(blackjack.deck)
+print(blackjack.player.hand)
+print(blackjack.player.hand_value())
+print(blackjack.player.is_bust())
+print(blackjack.deck)
