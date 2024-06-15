@@ -1,6 +1,7 @@
 from Hand import *
 from Deck import *
 from Player import *
+import copy
 
 class BlackjackProbabilityCalculator:
     def __init__(self) -> None:
@@ -33,11 +34,6 @@ class BlackjackProbabilityCalculator:
         for _ in range(input_num):
             player_card = self.get_card("Player")
             self.player.hand.add_card(player_card)
-
-    def play_dealer_hand(self) -> None:
-        while self.dealer.hand_value < 17:
-            self.dealer.hit(self.deck)
-
     
     def chance_of_bust(self):
         num_bust_cards = 0
@@ -47,5 +43,26 @@ class BlackjackProbabilityCalculator:
                 num_bust_cards += 1
         return round(num_bust_cards / self.deck.size(), 3)
 
-    
+    def monte_carlo_simulation(self, num_of_times: int) -> tuple:
+        wins = 0
+        losses = 0
+        ties = 0
+        for _ in range(num_of_times):
+            self.deck.shuffle()
+            copy_deck = copy.deepcopy(self.deck)
+            copy_dealer_hand = copy.deepcopy(self.dealer.hand)
+            while copy_dealer_hand.value() < 17:
+                copy_dealer_hand.add_card(copy_deck.deal_card())
+            if (copy_dealer_hand.value() < self.player.hand_value()) or copy_dealer_hand.is_bust():
+                losses += 1
+            elif copy_dealer_hand.value() > self.player.hand_value():
+                wins += 1
+            else:
+                ties += 1
+        win_percentage = round(wins / num_of_times, 2)
+        loss_percentage = round(losses / num_of_times, 2)
+        tie_percentage = round(ties / num_of_times, 2)
+        return (win_percentage, loss_percentage, tie_percentage)
+        
+
     
