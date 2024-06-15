@@ -2,7 +2,7 @@ from collections.abc import Iterable
 
 
 class Card:
-    def __init__(self, rank, suit):
+    def __init__(self, rank, suit) -> None:
         self.rank = rank
         self.suit = suit
 

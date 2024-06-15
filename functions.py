@@ -6,6 +6,7 @@ deck = []
 for suit in suits:
     for rank in ranks:
         deck.append(Card(rank, suit))
+dict_deck = {rank: 4 for rank in ranks}
 
 def card_value(rank):
     if rank in "23456789":
