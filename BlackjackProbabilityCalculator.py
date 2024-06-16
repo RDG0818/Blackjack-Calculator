@@ -2,6 +2,8 @@ from Hand import *
 from Deck import *
 from Player import *
 import copy
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from single_simulation import single_simulation
 
 class BlackjackProbabilityCalculator:
     def __init__(self) -> None:
@@ -43,7 +45,7 @@ class BlackjackProbabilityCalculator:
                 num_bust_cards += 1
         return round(num_bust_cards / self.deck.size(), 3)
 
-    def monte_carlo_simulation(self, num_of_times: int) -> tuple:
+    def sequential_monte_carlo_simulation(self, num_of_times: int) -> tuple:
         wins = 0
         losses = 0
         ties = 0
@@ -61,4 +63,23 @@ class BlackjackProbabilityCalculator:
             else:
                 ties += 1
         return (wins / num_of_times, losses / num_of_times, ties / num_of_times)
+
+    def parallelized_monte_carlo_simulation(self, num: int) -> tuple:
+        player_hand_value = self.player.hand_value()
+        deck_list = self.deck.list[:]
+        dealer_hand = self.dealer.hand
+
+        with ThreadPoolExecutor() as executor:
+            results = list(executor.map(single_simulation, [player_hand_value] * num, [deck_list] * num, [dealer_hand] * num))     
+        wins = 0
+        losses = 0
+        ties = 0
+        for s in results:
+            if (s == 'w'):
+                wins += 1
+            elif (s == 'l'):
+                losses += 1
+            else:
+                ties += 1
+        return (wins / num, losses / num, ties / num)
         
