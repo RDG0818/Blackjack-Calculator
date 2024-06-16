@@ -47,22 +47,18 @@ class BlackjackProbabilityCalculator:
         wins = 0
         losses = 0
         ties = 0
+        player_hand_value = self.player.hand_value()
         for _ in range(num_of_times):
             self.deck.shuffle()
-            copy_deck = copy.deepcopy(self.deck)
+            copy_list = self.deck.list[:]
             copy_dealer_hand = copy.deepcopy(self.dealer.hand)
             while copy_dealer_hand.value() < 17:
-                copy_dealer_hand.add_card(copy_deck.deal_card())
-            if (copy_dealer_hand.value() < self.player.hand_value()) or copy_dealer_hand.is_bust():
+                copy_dealer_hand.add_card(copy_list.pop())
+            if (copy_dealer_hand.value() < player_hand_value) or copy_dealer_hand.is_bust():
                 losses += 1
             elif copy_dealer_hand.value() > self.player.hand_value():
                 wins += 1
             else:
                 ties += 1
-        win_percentage = round(wins / num_of_times, 2)
-        loss_percentage = round(losses / num_of_times, 2)
-        tie_percentage = round(ties / num_of_times, 2)
-        return (win_percentage, loss_percentage, tie_percentage)
+        return (wins / num_of_times, losses / num_of_times, ties / num_of_times)
         
-
-    
