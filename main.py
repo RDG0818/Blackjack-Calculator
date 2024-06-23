@@ -5,12 +5,12 @@ if __name__ == "__main__":
     blackjack = BlackjackProbabilityCalculator()
     blackjack.get_initial_hands()
     start_time = time.time()
-    tup = blackjack.sequential_monte_carlo_simulation(10000)
+    print(blackjack.sequential_single_hit(10000))
     end_time = time.time()
-    print([str(round(num * 100, 4)) + '%' for num in tup])
-    print(f"Sequential elapsed time: {end_time - start_time} seconds")
+    print("Elapsed time:", end_time - start_time)
     start_time = time.time()
-    tup = blackjack.parallelized_monte_carlo_simulation(10000)
+    print(blackjack.sequential_stand(10000))
     end_time = time.time()
-    print([str(round(num * 100, 4)) + '%' for num in tup])
-    print(f"Parallelized elapsed time: {end_time - start_time} seconds")
+    print("Elapsed time:", end_time - start_time)
+
+    

@@ -1,10 +1,10 @@
 from Card import *
 import random
 class Deck:
-    def __init__(self) -> None:
+    def __init__(self, num = 1) -> None:
         self.suits = ("S", "C", "H", "D")
         self.ranks = ("A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K")
-        self.list = [Card(rank, suit) for suit in self.suits for rank in self.ranks]
+        self.list = [Card(rank, suit) for suit in self.suits for rank in self.ranks] * num
         self.original_copy = self.list
 
     def deal_card(self) -> Card:

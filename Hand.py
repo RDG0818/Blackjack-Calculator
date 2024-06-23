@@ -19,6 +19,9 @@ class Hand:
             num_aces -= 1
         return value
     
+    def size(self) -> int:
+        return len(self.cards)
+
     def is_bust(self) -> bool:
         return self.value() > 21
     
