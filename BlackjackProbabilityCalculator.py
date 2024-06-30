@@ -4,23 +4,22 @@ from Player import *
 import copy
 from concurrent.futures import ThreadPoolExecutor
 from single_simulation import single_simulation
+from collections import Counter
+from math import factorial
+import pandas as pd
 
 class BlackjackProbabilityCalculator:
     def __init__(self) -> None:
         self.deck = Deck()
         self.dealer = Player("Dealer")
         self.player = Player("Player")
-        self.soft_17 = False
 
     def get_card(self, name: str) -> Card:
         while True:
             rank = input(f"{name}'s card rank: ")
             while rank not in self.deck.ranks:
                 rank = input("Enter a valid rank (A, 2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K): ")
-            suit = input(f"{name}'s card suit: ")
-            while suit not in self.deck.suits:
-                suit = input("Enter a valid suit (S, C, H, D): ")
-            curr_card = Card(rank, suit)
+            curr_card = Card(rank)
             if curr_card not in self.deck.list:
                 print("Card already chosen. Enter a different card.")
                 continue
@@ -95,7 +94,7 @@ class BlackjackProbabilityCalculator:
                 del self.dealer.hand.cards[i]
         return dealer_value
     
-    def sequential_stand(self, num: int) -> tuple: # Finds probability chance of winning/losing/tieing through Monte Carlo Simulation
+    def monte_carlo_stand(self, num: int) -> tuple: # Finds probability chance of winning/losing/tieing through Monte Carlo Simulation
         wins = losses = ties = 0
         player_hand_value = self.player.hand_value()
         for _ in range(num):
@@ -130,7 +129,7 @@ class BlackjackProbabilityCalculator:
                 ties += 1
         return (wins / num, losses / num, ties / num)
     
-    def sequential_single_hit(self, num: int) -> tuple:
+    def monte_carlo_hit(self, num: int) -> tuple:
         wins = losses = ties = 0
         for _ in range(num):
             self.deck.shuffle()
@@ -153,4 +152,57 @@ class BlackjackProbabilityCalculator:
                 ties += 1
         return (wins / num, losses / num, ties / num)
 
+    def get_combinations(self, target: int) -> list: 
+        def backtracking(start: int, target: int, path: list, result: list):
+            if target == 0:
+                result.append(path[:])
+                return
+            if target < 0:
+                return
+            for i in range(start, 12):
+                path.append(i)
+                backtracking(i, target - i, path, result)
+                path.pop()
+        result = []
+        backtracking(1, target, [], result)
+        return result
+
+    def probability_distribution(self, dealer_upcard = None) -> dict: 
+        def backtracking(path: list, result: dict):
+            # Handle the conversion of a soft ace (11) to a hard ace (1) if it prevents busting
+            if 11 in path and sum(path) >= 22:
+                path = path[:]
+                path[path.index(11)] = 1
+
+            # Calculate probabilities and update the result dictionary
+            total = sum(path)
+            if total >= 17:
+                total_probability = 1
+                start = 0 if dealer_upcard == None else 1
+                for i in range(start, len(path)):
+                    total_probability *= (1/13) if path[i] != 10 else (4/13)
+                if (len(path) == 2) and (10 in path) and (11 in path):
+                    result["blackjack"] += total_probability
+                elif total <= 21:
+                    result[total] += total_probability
+                else:
+                    result["bust"] += total_probability
+                return
             
+            # Recursively explore the next possible card values
+            for i in range(2, 12):
+                path.append(i)
+                backtracking(path, result)
+                path.pop()
+
+        # Initialize the result dictionary
+        result = {num : 0 for num in range(17, 22)}
+        result["bust"] = 0
+        result["blackjack"] = 0
+
+        # Start the backtracking process
+        if dealer_upcard:
+            backtracking([dealer_upcard], result)
+        else:
+            backtracking([], result)
+        return result
