@@ -1,6 +1,6 @@
 # Blackjack Probability Calculator
 
-This project provides a comprehensive analysis of blackjack probabilities and expected values using Python. The analysis includes dealer probability distributions, conditional probabilities based on the dealer's first card, and the player's expected value when standing. The calculations assume the dealer does not hit on a soft 17 and an infinite-sized deck.
+This project provides a comprehensive analysis of blackjack probabilities and expected values using Python. The analysis includes dealer probability distributions, conditional probabilities based on the dealer's first card, and the player's expected value when standing. The calculations assume the dealer does not hit on a soft 17 and an infinite-sized deck. Note that this is still WIP.
 
 ## Features
 
