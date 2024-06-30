@@ -206,3 +206,30 @@ class BlackjackProbabilityCalculator:
         else:
             backtracking([], result)
         return result
+
+    def stand_EV(self, num):
+        probabilities = self.probability_distribution(num)
+        stand_EV = {"blackjack" : 0, 21 : 0, 20 : 0, 19 : 0, 18 : 0, 17 : 0, "<=16" : 0}
+        for player in stand_EV.keys():
+            if player == "blackjack":
+                for value, prob in probabilities.items():
+                    if (value != "blackjack"):
+                        stand_EV[player] += prob
+                stand_EV[player] *= 1.5
+            elif player == "<=16":
+                for value, prob in probabilities.items():
+                    if (value != "bust"):
+                        stand_EV[player] -= prob
+                    else:
+                        stand_EV[player] += prob
+            else:
+                for value, prob in probabilities.items():
+                    if (value == "blackjack"):
+                        stand_EV[player] -= prob
+                    elif (value == "bust"):
+                        stand_EV[player] += prob
+                    elif (value < player):
+                        stand_EV[player] += prob
+                    elif (value > player):
+                        stand_EV[player] -= prob
+        return stand_EV
