@@ -1,15 +1,19 @@
-# Blackjack Probability Calculator
+# Blackjack Probability Calculator (WIP)
 
-This project provides a comprehensive analysis of blackjack probabilities and expected values using Python. The analysis includes dealer probability distributions, conditional probabilities based on the dealer's first card, and the player's expected value when standing. The calculations assume the dealer does not hit on a soft 17 and an infinite-sized deck. Note that this is still WIP.
+This project calculates the probabilities and expected values for various scenarios in the game of blackjack. It assumes the dealer does not hit on a soft 17 and uses an infinite-sized deck.
 
 ## Features
 
-- **Probability Distributions**: Computes the dealer's end probability distribution and probabilities conditioned on the dealer's first card.
-- **Expected Value Calculation**: Calculates the player's expected value when they choose to stand, incorporating complex interactions between player and dealer hands.
-- **Monte Carlo Simulations**: Cross-checks calculated probabilities with Monte Carlo simulations for validation.
-- **Object-Oriented Design**: Utilizes an extensive class hierarchy for cards, hands, decks, players, and the probability calculator.
+- **Dealer Probability Distribution**: Calculates the end probability distribution for the dealer’s hand.
+- **Conditioned Dealer Results**: Computes probabilities for the dealer's results conditioned on the dealer's first card.
+- **Expected Value Calculation**: Calculates the expected value (EV) of the player's hand if they stand or hit.
+- **EV Table for Player Hitting**: Generates an EV table for scenarios where the player hits.
 
 ## Dependencies
 
 - Python 3.x
 - pandas
+
+## Inspiration
+
+This project was inspired by [The mathematics of blackjack: Probability](https://probability.infarom.ro/blackjack.html) article.
