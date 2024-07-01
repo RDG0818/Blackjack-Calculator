@@ -3,10 +3,6 @@ from Deck import *
 from Player import *
 import copy
 from concurrent.futures import ThreadPoolExecutor
-from single_simulation import single_simulation
-from collections import Counter
-from math import factorial
-import pandas as pd
 
 class BlackjackProbabilityCalculator:
     def __init__(self) -> None:
@@ -14,63 +10,32 @@ class BlackjackProbabilityCalculator:
         self.dealer = Player("Dealer")
         self.player = Player("Player")
 
-    def get_card(self, name: str) -> Card:
+    def get_card_from_input(self, player_name: str) -> Card:
+        """Prompt the user to input a card rank and return a valid Card object."""
         while True:
-            rank = input(f"{name}'s card rank: ")
+            rank = input(f"{player_name}'s card rank: ").upper()
             while rank not in self.deck.ranks:
-                rank = input("Enter a valid rank (A, 2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K): ")
-            curr_card = Card(rank)
-            if curr_card not in self.deck.list:
+                rank = input("Enter a valid rank (A, 2, 3, 4, 5, 6, 7, 8, 9, T, J, Q, K): ").upper()
+            card = Card(rank)
+            if card not in self.deck.list:
                 print("Card already chosen. Enter a different card.")
                 continue
-            self.deck.remove_card(curr_card)
-            return curr_card
-    
-    def get_rules(self):
-        rules = {}
-
-        rules['dealer_hits_soft_17'] = input("Does the dealer hit on a soft 17? (yes/no): ").strip().lower() == 'yes'
-        rules['double_down_allowed'] = input("Is double down allowed? (yes/no): ").strip().lower() == 'yes'
-        if rules['double_down_allowed']:
-            rules['double_down_on_any_two_cards'] = input("Can you double down on any two cards? (yes/no): ").strip().lower() == 'yes'
-            rules['double_down_after_splitting'] = input("Can you double down after splitting? (yes/no): ").strip().lower() == 'yes'
-
-        rules['splitting_allowed'] = input("Is splitting allowed? (yes/no): ").strip().lower() == 'yes'
-        if rules['splitting_allowed']:
-            rules['resplit_aces'] = input("Can you resplit Aces? (yes/no): ").strip().lower() == 'yes'
-            rules['max_splits'] = int(input("What is the maximum number of splits allowed?: "))
-
-        rules['surrender_allowed'] = input("Is surrendering allowed? (yes/no): ").strip().lower() == 'yes'
-        if rules['surrender_allowed']:
-            rules['early_surrender'] = input("Is it early surrender? (yes/no): ").strip().lower() == 'yes'
-
-        rules['blackjack_payout'] = input("What is the payout for a natural Blackjack? (3:2 or 6:5): ").strip()
-
-        rules['number_of_decks'] = int(input("How many decks are used in the game?: "))
-        self.deck = Deck(rules['number_of_decks'])
-
-        rules['insurance_offered'] = input("Is insurance offered when the dealer shows an Ace? (yes/no): ").strip().lower() == 'yes'
-        if rules['insurance_offered']:
-            rules['insurance_payout'] = input("What is the payout for insurance? (typically 2:1): ").strip()
-
-        rules['even_money_offered'] = input("If you have a Blackjack and the dealer shows an Ace, is even money offered? (yes/no): ").strip().lower() == 'yes'
-
-        return rules
+            self.deck.remove_card(card)
+            return card
 
     def get_initial_hands(self) -> None:
-        dealer_card = self.get_card("Dealer")
+        """Initialize the dealer's and player's hands by prompting for their cards."""
+        dealer_card = self.get_card_from_input("Dealer")
         self.dealer.hand.add_card(dealer_card)
-        input_num = input("Cards in hand: ")
-        while not input_num.isdigit():
-            input_num = input("Enter a number: ")
-        input_num = int(input_num)
-        for _ in range(input_num):
-            player_card = self.get_card("Player")
-            self.player.hand.add_card(player_card)
 
-    def player_hand_min_11(self) -> None: # Checks if player hand is less than 11. If it is, it automatically adds another card.
-        while self.player.hand_value < 11:
-            self.player.hit(self.deck)
+        num_cards = input("Number of cards in player's hand: ")
+        while not num_cards.isdigit():
+            num_cards = input("Enter a valid number: ")
+        num_cards = int(num_cards)
+
+        for _ in range(num_cards):
+            player_card = self.get_card_from_input("Player")
+            self.player.hand.add_card(player_card)
 
     def chance_of_bust(self):
         num_bust_cards = 0
@@ -80,77 +45,86 @@ class BlackjackProbabilityCalculator:
                 num_bust_cards += 1
         return round(num_bust_cards / self.deck.size(), 3)
 
-    def dealer_action(self):
+    def dealer_action(self) -> int:
+        """Perform the dealer's actions according to the game rules and return the dealer's final hand value. Intended for monte_carlo functions."""
         self.deck.shuffle()
         dealt_cards = []
+
+        # Dealer draws cards until the hand value is at least 17
         while self.dealer.hand_value() < 17:
             card = self.deck.deal_card()
             dealt_cards.append(card)
             self.dealer.hand.add_card(card)
+
         dealer_value = self.dealer.hand_value()
-        self.deck.list += dealt_cards
-        for i in range(len(self.dealer.hand.cards) - 1, -1, -1):
-            if self.dealer.hand.cards[i] in dealt_cards:
-                del self.dealer.hand.cards[i]
+
+        # Return the dealt cards to the deck
+        self.deck.list.extend(dealt_cards)
+        
+        # Remove dealt cards from the dealer's hand
+        self.dealer.hand.cards = [card for card in self.dealer.hand.cards if card not in dealt_cards]
+
         return dealer_value
     
-    def monte_carlo_stand(self, num: int) -> tuple: # Finds probability chance of winning/losing/tieing through Monte Carlo Simulation
-        wins = losses = ties = 0
+    def monte_carlo_stand(self, simulations: int) -> tuple:
+        """Simulate the outcome of standing in blackjack through Monte Carlo simulation. 1 million simulations takes about 15 seconds."""
+        wins, losses, ties = 0, 0, 0
         player_hand_value = self.player.hand_value()
-        for _ in range(num):
+        
+        for _ in range(simulations):
             dealer_value = self.dealer_action()
+            
             if player_hand_value > 21:
                 losses += 1
-            elif dealer_value > 21:
+            elif dealer_value > 21 or dealer_value < player_hand_value:
                 wins += 1
             elif dealer_value > player_hand_value:
                 losses += 1
-            elif dealer_value < player_hand_value:
-                wins += 1
             else:
                 ties += 1
-        return (wins / num, losses / num, ties / num)
-
-    def parallelized_stand(self, num: int) -> tuple: # Similar to sequential_stand but it utilizes multithreading 
-        player_hand_value = self.player.hand_value()
-        deck_list = self.deck.list[:]
-        dealer_hand = self.dealer.hand
-
-        with ThreadPoolExecutor() as executor:
-            results = list(executor.map(single_simulation, [player_hand_value] * num, [deck_list] * num, [dealer_hand] * num)) 
-
-        wins = losses = ties = 0
-        for s in results:
-            if (s == 'w'):
-                wins += 1
-            elif (s == 'l'):
-                losses += 1
-            else:
-                ties += 1
-        return (wins / num, losses / num, ties / num)
+        
+        total_simulations = simulations
+        win_probability = wins / total_simulations
+        loss_probability = losses / total_simulations
+        tie_probability = ties / total_simulations
+        
+        return win_probability, loss_probability, tie_probability
     
-    def monte_carlo_hit(self, num: int) -> tuple:
-        wins = losses = ties = 0
-        for _ in range(num):
+    def monte_carlo_hit(self, simulations: int) -> tuple:
+        """Simulate the outcome of hitting in blackjack through Monte Carlo simulation. 1 million simulations takes about 25 seconds."""
+        wins, losses, ties = 0, 0, 0
+        
+        for _ in range(simulations):
             self.deck.shuffle()
+            
+            # Deal a card to the player and add it to their hand
             card = self.deck.deal_card()
             dealt_cards = [card]
             self.player.hand.add_card(card)
+            
             player_hand_value = self.player.hand_value()
             dealer_value = self.dealer_action()
+            
+            # Return dealt card to the deck and remove from player's hand
             self.deck.list += dealt_cards
-            self.player.hand.cards.remove(dealt_cards[0])
+            self.player.hand.cards.remove(card)
+            
+            # Determine the outcome
             if player_hand_value > 21:
                 losses += 1
-            elif dealer_value > 21:
+            elif dealer_value > 21 or dealer_value < player_hand_value:
                 wins += 1
             elif dealer_value > player_hand_value:
                 losses += 1
-            elif dealer_value < player_hand_value:
-                wins += 1
             else:
                 ties += 1
-        return (wins / num, losses / num, ties / num)
+    
+        total_simulations = simulations
+        win_probability = wins / total_simulations
+        loss_probability = losses / total_simulations
+        tie_probability = ties / total_simulations
+    
+        return win_probability, loss_probability, tie_probability
 
     def get_combinations(self, target: int) -> list: 
         def backtracking(start: int, target: int, path: list, result: list):
@@ -167,69 +141,3 @@ class BlackjackProbabilityCalculator:
         backtracking(1, target, [], result)
         return result
 
-    def probability_distribution(self, dealer_upcard = None) -> dict: 
-        def backtracking(path: list, result: dict):
-            # Handle the conversion of a soft ace (11) to a hard ace (1) if it prevents busting
-            if 11 in path and sum(path) >= 22:
-                path = path[:]
-                path[path.index(11)] = 1
-
-            # Calculate probabilities and update the result dictionary
-            total = sum(path)
-            if total >= 17:
-                total_probability = 1
-                start = 0 if dealer_upcard == None else 1
-                for i in range(start, len(path)):
-                    total_probability *= (1/13) if path[i] != 10 else (4/13)
-                if (len(path) == 2) and (10 in path) and (11 in path):
-                    result["blackjack"] += total_probability
-                elif total <= 21:
-                    result[total] += total_probability
-                else:
-                    result["bust"] += total_probability
-                return
-            
-            # Recursively explore the next possible card values
-            for i in range(2, 12):
-                path.append(i)
-                backtracking(path, result)
-                path.pop()
-
-        # Initialize the result dictionary
-        result = {num : 0 for num in range(17, 22)}
-        result["bust"] = 0
-        result["blackjack"] = 0
-
-        # Start the backtracking process
-        if dealer_upcard:
-            backtracking([dealer_upcard], result)
-        else:
-            backtracking([], result)
-        return result
-
-    def stand_EV(self, num):
-        probabilities = self.probability_distribution(num)
-        stand_EV = {"blackjack" : 0, 21 : 0, 20 : 0, 19 : 0, 18 : 0, 17 : 0, "<=16" : 0}
-        for player in stand_EV.keys():
-            if player == "blackjack":
-                for value, prob in probabilities.items():
-                    if (value != "blackjack"):
-                        stand_EV[player] += prob
-                stand_EV[player] *= 1.5
-            elif player == "<=16":
-                for value, prob in probabilities.items():
-                    if (value != "bust"):
-                        stand_EV[player] -= prob
-                    else:
-                        stand_EV[player] += prob
-            else:
-                for value, prob in probabilities.items():
-                    if (value == "blackjack"):
-                        stand_EV[player] -= prob
-                    elif (value == "bust"):
-                        stand_EV[player] += prob
-                    elif (value < player):
-                        stand_EV[player] += prob
-                    elif (value > player):
-                        stand_EV[player] -= prob
-        return stand_EV
