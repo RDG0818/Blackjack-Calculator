@@ -1,6 +1,6 @@
 # Blackjack Probability Calculator (WIP)
 
-This project provides a comprehensive Blackjack Probability Calculator, using Python and pandas, to determine optimal play strategies under specific constraints. The calculator generates tables and performs simulations to help users understand the exact probabilities of each decision in Blackjack.
+This project generates tables, using Python and pandas, to determine optimal play strategies for blackjack. This project also includes Monte Carlo simulations to cross-check the expected values and probabilities
 
 ## Project Features
 
