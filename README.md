@@ -40,7 +40,9 @@ This project provides a comprehensive Blackjack Probability Calculator, using Py
     pip install -r requirements.txt
 
 ## Usage
-
+  ```python
+  # import functions from ProbabilityFunctions
+  import ProbabilityFunctions
 
 ## Future Development
 
