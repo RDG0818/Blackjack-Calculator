@@ -37,14 +37,6 @@ class BlackjackProbabilityCalculator:
             player_card = self.get_card_from_input("Player")
             self.player.hand.add_card(player_card)
 
-    def chance_of_bust(self):
-        num_bust_cards = 0
-        for card in self.deck.list:
-            temp_hand = Hand(self.player.hand.cards + [card])
-            if temp_hand.value() > 21:
-                num_bust_cards += 1
-        return round(num_bust_cards / self.deck.size(), 3)
-
     def dealer_action(self) -> int:
         """Perform the dealer's actions according to the game rules and return the dealer's final hand value. Intended for monte_carlo functions."""
         self.deck.shuffle()
@@ -125,19 +117,4 @@ class BlackjackProbabilityCalculator:
         tie_probability = ties / total_simulations
     
         return win_probability, loss_probability, tie_probability
-
-    def get_combinations(self, target: int) -> list: 
-        def backtracking(start: int, target: int, path: list, result: list):
-            if target == 0:
-                result.append(path[:])
-                return
-            if target < 0:
-                return
-            for i in range(start, 12):
-                path.append(i)
-                backtracking(i, target - i, path, result)
-                path.pop()
-        result = []
-        backtracking(1, target, [], result)
-        return result
 

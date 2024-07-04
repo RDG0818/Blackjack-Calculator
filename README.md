@@ -1,15 +1,51 @@
 # Blackjack Probability Calculator
 
-This project provides a comprehensive analysis of blackjack probabilities and expected values using Python. The analysis includes dealer probability distributions, conditional probabilities based on the dealer's first card, and the player's expected value when standing. The calculations assume the dealer does not hit on a soft 17 and an infinite-sized deck. Note that this is still WIP.
+This project provides a comprehensive Blackjack Probability Calculator, using Python and pandas, to determine optimal play strategies under specific constraints. The calculator generates tables and performs simulations to help users understand the exact probabilities of each decision in Blackjack.
 
-## Features
+## Project Features
 
-- **Probability Distributions**: Computes the dealer's end probability distribution and probabilities conditioned on the dealer's first card.
-- **Expected Value Calculation**: Calculates the player's expected value when they choose to stand, incorporating complex interactions between player and dealer hands.
-- **Monte Carlo Simulations**: Cross-checks calculated probabilities with Monte Carlo simulations for validation.
-- **Object-Oriented Design**: Utilizes an extensive class hierarchy for cards, hands, decks, players, and the probability calculator.
+- **Dealer Probability Distribution**: Calculates the overall distribution of the dealer's final hand.
+- **Conditional Dealer Probabilities**: Determines the probabilities for the dealer's results based on their first card.
+- **Player's Expected Profit**: Computes the expected profit for the player when they:
+  - Stand
+  - Hit
+  - Hit with a soft hand (Ace counted as 11)
+- **Optimal Player Strategy**: Evaluates the player's profit when they play optimally:
+  - With and without a soft hand
+- **Optimal Move Charts**:
+  - Optimal Move Chart
+  - Optimal Soft Move Chart
+- **Monte Carlo Simulation**: Cross-checks all probabilities through extensive simulations.
 
-## Dependencies
+## Constraints
 
-- Python 3.x
-- pandas
+- **Infinite Deck**: Assumes an infinite-sized deck.
+- **Dealer Stands on Soft 17**: The dealer does not hit on soft 17.
+- **No Double Downs or Splits**: Double downs and splits are not included in the current calculations (to be added later).
+
+## Installation
+
+1. **Clone the Repository**
+   ```sh
+   git clone https://github.com/yourusername/blackjack-probability-calculator.git
+   cd blackjack-probability-calculator
+
+2. **Create a Virtual Environment (Optional but recommended)**
+    ```sh
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+
+3. **Install Dependencies**
+    ```sh
+    pip install -r requirements.txt
+
+## Usage
+
+
+## Future Development
+
+- **Double Downs and Splits**: Adding functionality to handle double downs and splits in the calculations.
+- **Mobile App**: Developing a mobile app using Swift and SwiftUI to turn this calculator into an interactive training tool for Blackjack players.
+
+## Acknowledgements
+- Inspired by [The mathematics of blackjack: Probabilities](https://probability.infarom.ro/blackjack.html)
