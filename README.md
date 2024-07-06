@@ -2,22 +2,22 @@
 
 This Python project is designed to simulate and analyze the probabilities of various decisions in the game of Blackjack. This project includes several key components aimed at different aspects of Blackjack simulation and strategy evaluation.
 
-## Project Structure
-# Files:
+# Project Structure
+## Files:
 
-1. **Blackjack.py
+1. **Blackjack.py**
    Contains the Blackjack class that facilitates gameplay and interaction between players and the dealer.
    Provides methods for initializing hands, managing cards, and executing game logic.
 
-2. **MonteCarlo.py
+2. **MonteCarlo.py**
    Implements Monte Carlo simulations for evaluating strategies in Blackjack.
    Includes functions for simulating standing and hitting scenarios to estimate win probabilities and expected values.
 
-3. **ProbabilityFunctions.py
+3. **ProbabilityFunctions.py**
    Defines probability distribution calculations related to Blackjack.
    Functions compute probabilities of various outcomes based on dealer's upcard and player's hand values.
 
-4. **TableCreation.py
+4. **TableCreation.py**
    Generates tables summarizing optimal strategies and expected values for Blackjack.
    Functions create Pandas DataFrames for visualizing strategy decisions based on different game scenarios.
 
