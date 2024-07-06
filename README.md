@@ -73,5 +73,11 @@ This Python project is designed to simulate and analyze the probabilities of var
 - **Double Downs and Splits**: Adding functionality to handle double downs and splits in the calculations.
 - **Mobile App**: Developing a mobile app using Swift and SwiftUI to turn this calculator into an interactive training tool for Blackjack players.
 
+## Contributing
+Contributions are welcome! Please fork the repository and submit pull requests with your enhancements or bug fixes.
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
 ## Acknowledgements
 - Inspired by [The mathematics of blackjack: Probabilities](https://probability.infarom.ro/blackjack.html)
