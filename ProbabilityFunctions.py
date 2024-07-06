@@ -1,7 +1,19 @@
 import pandas as pd
 
-def probability_distribution(dealer_upcard = None) -> dict: 
+def probability_distribution(dealer_upcard=None) -> dict:
+    """
+    Calculate the probability distribution of the dealer's final hand values in blackjack.
+
+    :param dealer_upcard: The dealer's upcard value, if any. If no value is provided then the general probability distribution is generated.
+    :return: A dictionary representing the probability distribution of the dealer's final hand values.
+    """
     def backtracking(path: list, result: dict) -> None:
+        """
+        Recursively calculate probabilities of different hand values for the dealer.
+
+        :param path: The current path of cards drawn.
+        :param result: The dictionary to store the probabilities of different hand outcomes.
+        """
         # Handle the conversion of a soft ace (11) to a hard ace (1) if it prevents busting
         if 11 in path and sum(path) >= 22:
             path = path[:]
@@ -11,17 +23,17 @@ def probability_distribution(dealer_upcard = None) -> dict:
         total = sum(path)
         if total >= 17:
             total_probability = 1
-            start = 0 if dealer_upcard == None else 1
+            start = 0 if dealer_upcard is None else 1
             for i in range(start, len(path)):
                 total_probability *= (1/13) if path[i] != 10 else (4/13)
-            if (len(path) == 2) and (10 in path) and (11 in path):
+            if len(path) == 2 and 10 in path and 11 in path:
                 result["BJ"] += total_probability
             elif total <= 21:
                 result[total] += total_probability
             else:
                 result["bust"] += total_probability
             return
-        
+
         # Recursively explore the next possible card values
         for i in range(2, 12):
             path.append(i)
@@ -29,7 +41,7 @@ def probability_distribution(dealer_upcard = None) -> dict:
             path.pop()
 
     # Initialize the result dictionary
-    result = {num : 0 for num in range(17, 22)}
+    result = {num: 0 for num in range(17, 22)}
     result["bust"] = 0
     result["BJ"] = 0
 
@@ -40,148 +52,75 @@ def probability_distribution(dealer_upcard = None) -> dict:
         backtracking([], result)
     return result
 
-def stand_EV(num: int) -> dict:
-    probabilities = probability_distribution(num)
-    stand_EV = {num : 0 for num in range(21, 3, -1)}
+def stand_EV(dealer_upcard: int) -> dict:
+    """
+    Calculate the expected value of standing with a given dealer upcard.
+
+    :param dealer_upcard: The dealer's upcard value.
+    :return: A dictionary representing the expected values for different player hand values when standing.
+    """
+    probabilities = probability_distribution(dealer_upcard)
+    stand_EV = {num: 0 for num in range(21, 3, -1)}
     stand_EV["BJ"] = 0
-    for player in stand_EV.keys():
-        if player == "BJ":
+
+    for player_value in stand_EV.keys():
+        if player_value == "BJ":
             for value, prob in probabilities.items():
-                if (value != "BJ"):
-                    stand_EV[player] += prob
-            stand_EV[player] *= 1.5
+                if value != "BJ":
+                    stand_EV[player_value] += prob
+            stand_EV[player_value] *= 1.5
         else:
             for value, prob in probabilities.items():
-                if (value == "BJ"):
-                    stand_EV[player] -= prob
-                elif (value == "bust"):
-                    stand_EV[player] += prob
-                elif (value < player):
-                    stand_EV[player] += prob
-                elif (value > player):
-                    stand_EV[player] -= prob
+                if value == "BJ":
+                    stand_EV[player_value] -= prob
+                elif value == "bust":
+                    stand_EV[player_value] += prob
+                elif value < player_value:
+                    stand_EV[player_value] += prob
+                elif value > player_value:
+                    stand_EV[player_value] -= prob
     return stand_EV
 
-def hit_EV(num: int) -> dict:
-    s_EV = stand_EV(num)
+def hit_EV(dealer_upcard: int) -> dict:
+    """
+    Calculate the expected value of hitting with a given dealer upcard.
+
+    :param dealer_upcard: The dealer's upcard value.
+    :return: A dictionary representing the expected values for different player hand values when hitting.
+    """
+    s_EV = stand_EV(dealer_upcard)
     hit_EV = {}
-    for i in range(21, 3, -1):
+
+    for player_value in range(21, 3, -1):
         total = 0
-        for j in range(1, 11):
-            if i + j > 21:
-                total += -1/13 if j != 10 else -4/13
+        for card in range(1, 11):
+            if player_value + card > 21:
+                total += -1/13 if card != 10 else -4/13
             else:
-                prob = max([hit_EV[i+j], s_EV[i+j]])
-                total += 1/13 * prob if j != 10 else 4/13 * prob
-        hit_EV[i] = total
+                prob = max(hit_EV.get(player_value + card, 0), s_EV.get(player_value + card, 0))
+                total += (1/13 * prob) if card != 10 else (4/13 * prob)
+        hit_EV[player_value] = total
     return hit_EV
 
-def soft_hit_EV(num: int) -> dict:
-    s_EV = stand_EV(num)
-    h_EV = hit_EV(num)
+def soft_hit_EV(dealer_upcard: int) -> dict:
+    """
+    Calculate the expected value of hitting with a soft hand (hand containing an ace) and a given dealer upcard.
+
+    :param dealer_upcard: The dealer's upcard value.
+    :return: A dictionary representing the expected values for different player hand values when hitting with a soft hand.
+    """
+    s_EV = stand_EV(dealer_upcard)
+    h_EV = hit_EV(dealer_upcard)
     soft_hit_EV = {}
-    for i in range(21, 11, -1):
+
+    for player_value in range(21, 11, -1):
         total = 0
-        for j in range(1, 11):
-            if i + j > 21:
-                prob = max(h_EV[i+j-10], s_EV[i+j-10])
-                total += 1/13 * prob if j != 10 else 4/13 * prob
+        for card in range(1, 11):
+            if player_value + card > 21:
+                prob = max(h_EV.get(player_value + card - 10, 0), s_EV.get(player_value + card - 10, 0))
+                total += (1/13 * prob) if card != 10 else (4/13 * prob)
             else:
-                prob = max([soft_hit_EV[i+j], h_EV[i+j], s_EV[i+j]])
-                total += 1/13 * prob if j != 10 else 4/13 * prob
-        soft_hit_EV[i] = total
+                prob = max(soft_hit_EV.get(player_value + card, 0), h_EV.get(player_value + card, 0), s_EV.get(player_value + card, 0))
+                total += (1/13 * prob) if card != 10 else (4/13 * prob)
+        soft_hit_EV[player_value] = total
     return soft_hit_EV
-
- ######################################## Table Creation Functions ########################################
-
-def create_dealer_prob_dist_table(dealer_upcards: list) -> pd.DataFrame:
-    df_overall_probabilities = pd.DataFrame(probability_distribution().items(), columns=['Outcome', 'Probability']).round(4)
-    df_overall_probabilities.set_index('Outcome', inplace=True)
-    df_overall_probabilities = df_overall_probabilities.T
-    return df_overall_probabilities
-
-def create_dealer_prob_dict(dealer_upcards: list) -> dict:
-    dealer_probabilities = {}
-    for upcard in dealer_upcards:
-        upcard_value = 11 if upcard == 'A' else int(upcard)
-        dealer_probabilities[upcard] = probability_distribution(upcard_value)
-    return dealer_probabilities
-
-def create_dealer_prob_table(dealer_upcards: list) -> pd.DataFrame:
-    return pd.DataFrame(create_dealer_prob_dict(dealer_upcards))
-
-def create_stand_EV_dict(dealer_upcards: list) -> dict:
-    stand_expected_values = {}
-    for upcard in dealer_upcards:
-        upcard_value = 11 if upcard == 'A' else int(upcard)
-        stand_expected_values[upcard] = stand_EV(upcard_value)
-    return stand_expected_values
-
-def create_stand_EV_table(dealer_upcards: list) -> pd.DataFrame:
-    return pd.DataFrame(create_stand_EV_dict(dealer_upcards))
-
-def create_hit_EV_dict(dealer_upcards: list) -> dict:
-    hit_expected_values = {}
-    for upcard in dealer_upcards:
-        upcard_value = 11 if upcard == 'A' else int(upcard)
-        hit_expected_values[upcard] = hit_EV(upcard_value)
-    return hit_expected_values
-
-def create_hit_EV_table(dealer_upcards: list) -> pd.DataFrame:
-    return pd.DataFrame(create_hit_EV_dict(dealer_upcards))
-
-def create_soft_hit_EV_dict(dealer_upcards: list) -> dict:
-    soft_hit_expected_values = {}
-    for upcard in dealer_upcards:
-        upcard_value = 11 if upcard == 'A' else int(upcard)
-        soft_hit_expected_values[upcard] = soft_hit_EV(upcard_value)
-    return soft_hit_expected_values
-
-def create_soft_hit_EV_table(dealer_upcards: list) -> pd.DataFrame:
-    return pd.DataFrame(create_soft_hit_EV_dict(dealer_upcards))
-
-def create_optimal_dict(dealer_upcards: list) -> pd.DataFrame:
-    stand_expected_values = create_stand_EV_dict(dealer_upcards)
-    hit_expected_values = create_hit_EV_dict(dealer_upcards)
-    optimal_expected_values = {}
-    for upcard in dealer_upcards:
-        optimal_expected_values[upcard] = {"BJ": stand_expected_values[upcard]["BJ"]}
-        for i in range(21, 10, -1):
-            optimal_expected_values[upcard][i] = max(stand_expected_values[upcard][i], hit_expected_values[upcard][i])
-    return optimal_expected_values
-
-def create_optimal_values_table(dealer_upcards: list) -> pd.DataFrame:
-    return pd.DataFrame(create_optimal_dict(dealer_upcards))
-
-def create_optimal_table(dealer_upcards: list) -> pd.DataFrame:
-    stand_expected_values = create_stand_EV_dict(dealer_upcards)
-    hit_expected_values = create_hit_EV_dict(dealer_upcards)
-    optimal_moves = {}
-    for upcard in dealer_upcards:
-        optimal_moves[upcard] = {}
-        for i in range(21, 10, -1):
-            optimal_moves[upcard][i] = "Stand" if stand_expected_values[upcard][i] > hit_expected_values[upcard][i] else "Hit"
-    return pd.DataFrame(optimal_moves)
-
-def create_soft_optimal_dict(dealer_upcards: list) -> dict:
-    stand_expected_values = create_stand_EV_dict(dealer_upcards)
-    soft_hit_expected_values = create_soft_hit_EV_dict(dealer_upcards)
-    soft_optimal_expected_values = {}
-    for upcard in dealer_upcards:
-        soft_optimal_expected_values[upcard] = {"BJ": stand_expected_values[upcard]["BJ"]}
-        for i in range(21, 11, -1):
-            soft_optimal_expected_values[upcard][i] = max(stand_expected_values[upcard][i], soft_hit_expected_values[upcard][i])
-    return soft_optimal_expected_values
-
-def create_soft_optimal_values_table(dealer_upcards: list) -> pd.DataFrame:
-    return pd.DataFrame(create_soft_optimal_dict(dealer_upcards))
-
-def create_soft_optimal_table(dealer_upcards: list) -> pd.DataFrame:
-    stand_expected_values = create_stand_EV_dict(dealer_upcards)
-    soft_hit_expected_values = create_soft_hit_EV_dict(dealer_upcards)
-    soft_optimal_moves = {}
-    for upcard in dealer_upcards:
-        soft_optimal_moves[upcard] = {}
-        for i in range(21, 11, -1):
-            soft_optimal_moves[upcard][i] = "Stand" if stand_expected_values[upcard][i] > soft_hit_expected_values[upcard][i] else "Hit"
-    return pd.DataFrame(soft_optimal_moves)
