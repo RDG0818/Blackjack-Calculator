@@ -2,7 +2,6 @@
 
 This Python project is designed to simulate and analyze the probabilities of various decisions in the game of Blackjack. This project includes several key components aimed at different aspects of Blackjack simulation and strategy evaluation.
 
-# Project Structure
 ## Files:
 
 1. **Blackjack.py**
@@ -12,29 +11,25 @@ This Python project is designed to simulate and analyze the probabilities of var
 2. **MonteCarlo.py**
    Implements Monte Carlo simulations for evaluating strategies in Blackjack.
    Includes functions for simulating standing and hitting scenarios to estimate win probabilities and expected values.
+   Includes the following functions:
+   ```python
+   monte_carlo_stand(simulations: int, player_hand_value: int, dealer_upcard: int) -> float # Simulate the outcome of standing in blackjack
+   monte_carlo_hit(simulations: int, player_hand: list, dealer_upcard: int) -> float # Simulate the outcome of hitting in blackjack
+   ```
 
-3. **ProbabilityFunctions.py**
+4. **ProbabilityFunctions.py**
    Defines probability distribution calculations related to Blackjack.
    Functions compute probabilities of various outcomes based on dealer's upcard and player's hand values.
+   ```python
+   probability_distribution(dealer_upcard=None) -> dict # Calculates the probability distribution of the dealer depending on the value given. If no value is given, then it calculates the general probability distribution
+   stand_EV(dealer_upcard: int) -> dict # Calculate the expected value of standing with a given dealer upcard
+   hit_EV(dealer_upcard: int) -> dict # Calculate the expected value of hitting with a given dealer upcard
+   soft_hit_EV(dealer_upcard: int) -> dict # Calculate the expected value of hitting with a soft hand (hand containing an ace) and a given dealer upcard
+   ```
 
-4. **TableCreation.py**
+6. **TableCreation.py**
    Generates tables summarizing optimal strategies and expected values for Blackjack.
    Functions create Pandas DataFrames for visualizing strategy decisions based on different game scenarios.
-
-## Project Features
-
-- **Dealer Probability Distribution**: Calculates the overall distribution of the dealer's final hand.
-- **Conditional Dealer Probabilities**: Determines the probabilities for the dealer's results based on their first card.
-- **Player's Expected Profit**: Computes the expected profit for the player when they:
-  - Stand
-  - Hit
-  - Hit with a soft hand (Ace counted as 11)
-- **Optimal Player Strategy**: Evaluates the player's profit when they play optimally:
-  - With and without a soft hand
-- **Optimal Move Charts**:
-  - Optimal Move Chart
-  - Optimal Soft Move Chart
-- **Monte Carlo Stand and Hit Simulation**: Cross-checks all probabilities through extensive simulations.
 
 ## Constraints
 
