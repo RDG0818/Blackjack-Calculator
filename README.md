@@ -1,6 +1,25 @@
 # Blackjack Probability Calculator (WIP)
 
-This project generates tables, using Python and pandas, to determine optimal play strategies for blackjack. This project also includes Monte Carlo simulations to cross-check the expected values and probabilities
+This Python project is designed to simulate and analyze the probabilities of various decisions in the game of Blackjack. This project includes several key components aimed at different aspects of Blackjack simulation and strategy evaluation.
+
+## Project Structure
+# Files:
+
+1. **Blackjack.py
+   Contains the Blackjack class that facilitates gameplay and interaction between players and the dealer.
+   Provides methods for initializing hands, managing cards, and executing game logic.
+
+2. **MonteCarlo.py
+   Implements Monte Carlo simulations for evaluating strategies in Blackjack.
+   Includes functions for simulating standing and hitting scenarios to estimate win probabilities and expected values.
+
+3. **ProbabilityFunctions.py
+   Defines probability distribution calculations related to Blackjack.
+   Functions compute probabilities of various outcomes based on dealer's upcard and player's hand values.
+
+4. **TableCreation.py
+   Generates tables summarizing optimal strategies and expected values for Blackjack.
+   Functions create Pandas DataFrames for visualizing strategy decisions based on different game scenarios.
 
 ## Project Features
 
@@ -15,7 +34,7 @@ This project generates tables, using Python and pandas, to determine optimal pla
 - **Optimal Move Charts**:
   - Optimal Move Chart
   - Optimal Soft Move Chart
-- **Monte Carlo Simulation**: Cross-checks all probabilities through extensive simulations.
+- **Monte Carlo Stand and Hit Simulation**: Cross-checks all probabilities through extensive simulations.
 
 ## Constraints
 
