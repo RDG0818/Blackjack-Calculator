@@ -7,33 +7,48 @@ This Python project is designed to simulate and analyze the probabilities of var
 1. **Blackjack.py**
    Contains the Blackjack class that facilitates gameplay and interaction between players and the dealer.
    Provides methods for initializing hands, managing cards, and executing game logic.
+   ```python
+   game = Blackjack()
+   game.play_game()
 
-2. **MonteCarlo.py**
+3. **MonteCarlo.py**
    Implements Monte Carlo simulations for evaluating strategies in Blackjack.
    Includes functions for simulating standing and hitting scenarios to estimate win probabilities and expected values.
    Includes the following functions:
    ```python
-   monte_carlo_stand(simulations: int, player_hand_value: int, dealer_upcard: int) -> float # Simulate the outcome of standing in blackjack
-   monte_carlo_hit(simulations: int, player_hand: list, dealer_upcard: int) -> float # Simulate the outcome of hitting in blackjack
+   monte_carlo_stand(simulations: int, player_hand_value: int, dealer_upcard: int) # Simulate the outcome of standing in blackjack. Returns a float
+   monte_carlo_hit(simulations: int, player_hand: list, dealer_upcard: int) # Simulate the outcome of hitting in blackjack. Returns a float
    ```
 
 4. **ProbabilityFunctions.py**
    Defines probability distribution calculations related to Blackjack.
-   Functions compute probabilities of various outcomes based on dealer's upcard and player's hand values.
+   Functions compute probabilities of various outcomes based on dealer's upcard and player's hand values. Each function returns a dictionary.
    ```python
-   probability_distribution(dealer_upcard=None) -> dict # Calculates the probability distribution of the dealer depending on the value given. If no value is given, then it calculates the general probability distribution
-   stand_EV(dealer_upcard: int) -> dict # Calculate the expected value of standing with a given dealer upcard
-   hit_EV(dealer_upcard: int) -> dict # Calculate the expected value of hitting with a given dealer upcard
-   soft_hit_EV(dealer_upcard: int) -> dict # Calculate the expected value of hitting with a soft hand (hand containing an ace) and a given dealer upcard
+   probability_distribution(dealer_upcard=None) # Calculates the probability distribution of the dealer depending on the value given. If no value is given, then it calculates the general probability distribution.
+   stand_EV(dealer_upcard: int) # Calculate the expected value of standing with a given dealer upcard.
+   hit_EV(dealer_upcard: int) # Calculate the expected value of hitting with a given dealer upcard.
+   soft_hit_EV(dealer_upcard: int) # Calculate the expected value of hitting with a soft hand (hand containing an ace) and a given dealer upcard.
    ```
 
 6. **TableCreation.py**
    Generates tables summarizing optimal strategies and expected values for Blackjack.
    Functions create Pandas DataFrames for visualizing strategy decisions based on different game scenarios.
-
+   ```python
+   dealer_upcards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'A']
+   create_dealer_prob_dist_table(dealer_upcards: list) # Create a probability distribution table for the dealer's possible outcomes.
+   create_dealer_prob_table(dealer_upcards: list) # Create a probability table for the dealer's outcomes.
+   create_stand_EV_table(dealer_upcards: list) # Create a table of expected values for standing with each dealer upcard.
+   create_hit_EV_table(dealer_upcards: list) # Create a table of expected values for hitting with each dealer upcard.
+   create_soft_hit_EV_table(dealer_upcards: list) # Create a table of expected values for hitting with a soft hand and each dealer upcard.
+   create_optimal_values_table(dealer_upcards: list) # Create a table of optimal expected values for each dealer upcard.
+   create_optimal_table(dealer_upcards: list) # Create a table of optimal moves (Stand or Hit) for each dealer upcard.
+   create_soft_optimal_values_table(dealer_upcards: list) # Create a table of optimal expected values for soft hands and each dealer upcard.
+   create_soft_optimal_table(dealer_upcards: list) # Create a table of optimal moves (Stand or Hit) for soft hands and each dealer upcard.
+   ```
+   
 ## Constraints
 
-- **Infinite Deck**: Assumes an infinite-sized deck.
+- **Infinite Deck**: Both the Monte Carlo simulations and the probability functions assume an infinite deck size.
 - **Dealer Stands on Soft 17**: The dealer does not hit on soft 17.
 - **No Double Downs or Splits**: Double downs and splits are not included in the current calculations (to be added later).
 
@@ -52,26 +67,6 @@ This Python project is designed to simulate and analyze the probabilities of var
 3. **Install Dependencies**
     ```sh
     pip install -r requirements.txt
-
-## Usage
-  ```python
-  # import functions from ProbabilityFunctions
-  import ProbabilityFunctions
-  blackjack = BlackjackProbabilityCalculator()
-
-  dealer_upcards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'A']
-  
-  # Print the dataframes
-  print(create_dealer_prob_dist_table(dealer_upcards)) # Overall Dealer Probability Distribution
-  print(create_dealer_prob_table(dealer_upcards)) # Probabilities for the dealer's results conditioned on the dealer's first card
-  print(create_stand_EV_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player stands
-  print(create_hit_EV_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player hits
-  print(create_soft_hit_EV_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player hits with a soft hand
-  print(create_optimal_values_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player plays optimally
-  print(create_soft_optimal_values_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player plays optimally and has a soft hand
-  print(create_optimal_table(dealer_upcards)) # Optimal Move Chart
-  print(create_soft_optimal_table(dealer_upcards)) # Optimal Soft Move Chart
-  ```
   
 ## Future Development
 
