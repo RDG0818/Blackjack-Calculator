@@ -1,6 +1,6 @@
 # Blackjack Probability Calculator (WIP)
 
-This project provides a comprehensive Blackjack Probability Calculator, using Python and pandas, to determine optimal play strategies under specific constraints. The calculator generates tables and performs simulations to help users understand the exact probabilities of each decision in Blackjack.
+This project generates tables, using Python and pandas, to determine optimal play strategies for blackjack. This project also includes Monte Carlo simulations to cross-check the expected values and probabilities
 
 ## Project Features
 
@@ -40,8 +40,25 @@ This project provides a comprehensive Blackjack Probability Calculator, using Py
     pip install -r requirements.txt
 
 ## Usage
+  ```python
+  # import functions from ProbabilityFunctions
+  import ProbabilityFunctions
+  blackjack = BlackjackProbabilityCalculator()
 
-
+  dealer_upcards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'A']
+  
+  # Print the dataframes
+  print(create_dealer_prob_dist_table(dealer_upcards)) # Overall Dealer Probability Distribution
+  print(create_dealer_prob_table(dealer_upcards)) # Probabilities for the dealer's results conditioned on the dealer's first card
+  print(create_stand_EV_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player stands
+  print(create_hit_EV_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player hits
+  print(create_soft_hit_EV_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player hits with a soft hand
+  print(create_optimal_values_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player plays optimally
+  print(create_soft_optimal_values_table(dealer_upcards)) # Expectations, conditioned on the dealer's first card, for the player's profit, when the player plays optimally and has a soft hand
+  print(create_optimal_table(dealer_upcards)) # Optimal Move Chart
+  print(create_soft_optimal_table(dealer_upcards)) # Optimal Soft Move Chart
+  ```
+  
 ## Future Development
 
 - **Double Downs and Splits**: Adding functionality to handle double downs and splits in the calculations.
