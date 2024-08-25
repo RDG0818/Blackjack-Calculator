@@ -81,7 +81,7 @@ def stand_EV(dealer_upcard: int) -> dict:
                     stand_EV[player_value] -= prob
     return stand_EV
 
-def hit_EV(dealer_upcard: int) -> dict:
+def hit_EV(dealer_upcard: int, double_down = False) -> dict:
     """
     Calculate the expected value of hitting with a given dealer upcard.
 
@@ -97,12 +97,12 @@ def hit_EV(dealer_upcard: int) -> dict:
             if player_value + card > 21:
                 total += -1/13 if card != 10 else -4/13
             else:
-                prob = max(hit_EV.get(player_value + card, 0), s_EV.get(player_value + card, 0))
+                prob = max(hit_EV.get(player_value + card, 0), s_EV.get(player_value + card, 0)) if not double_down else s_EV.get(player_value + card, 0)
                 total += (1/13 * prob) if card != 10 else (4/13 * prob)
-        hit_EV[player_value] = total
+        hit_EV[player_value] = total if not double_down else total * 2
     return hit_EV
 
-def soft_hit_EV(dealer_upcard: int) -> dict:
+def soft_hit_EV(dealer_upcard: int, double_down = False) -> dict:
     """
     Calculate the expected value of hitting with a soft hand (hand containing an ace) and a given dealer upcard.
 
@@ -117,10 +117,10 @@ def soft_hit_EV(dealer_upcard: int) -> dict:
         total = 0
         for card in range(1, 11):
             if player_value + card > 21:
-                prob = max(h_EV.get(player_value + card - 10, 0), s_EV.get(player_value + card - 10, 0))
+                prob = max(h_EV.get(player_value + card - 10, 0), s_EV.get(player_value + card - 10, 0)) if not double_down else s_EV.get(player_value + card - 10, 0)
                 total += (1/13 * prob) if card != 10 else (4/13 * prob)
             else:
-                prob = max(soft_hit_EV.get(player_value + card, 0), h_EV.get(player_value + card, 0), s_EV.get(player_value + card, 0))
+                prob = max(soft_hit_EV.get(player_value + card, 0), h_EV.get(player_value + card, 0), s_EV.get(player_value + card, 0)) if not double_down else s_EV.get(player_value + card, 0)
                 total += (1/13 * prob) if card != 10 else (4/13 * prob)
-        soft_hit_EV[player_value] = total
+        soft_hit_EV[player_value] = total if not double_down else total * 2
     return soft_hit_EV
