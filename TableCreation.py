@@ -161,7 +161,7 @@ def create_optimal_dict(dealer_upcards: list) -> dict:
     optimal_expected_values = {}
     for upcard in dealer_upcards:
         optimal_expected_values[upcard] = {"BJ": stand_expected_values[upcard]["BJ"]}
-        for value in range(21, 10, -1):
+        for value in range(21, 3, -1):
             optimal_expected_values[upcard][value] = max(stand_expected_values[upcard][value], hit_expected_values[upcard][value], double_down_values[upcard][value])
     return optimal_expected_values
 
@@ -187,7 +187,7 @@ def create_optimal_table(dealer_upcards: list) -> pd.DataFrame:
     optimal_moves = {}
     for upcard in dealer_upcards:
         optimal_moves[upcard] = {}
-        for value in range(21, 10, -1):
+        for value in range(21, 3, -1):
             temp = max(stand_expected_values[upcard][value], hit_expected_values[upcard][value], double_down_values[upcard][value])
             if (temp == stand_expected_values[upcard][value]):
                 optimal_moves[upcard][value] = "Stand"
@@ -245,3 +245,33 @@ def create_soft_optimal_table(dealer_upcards: list) -> pd.DataFrame:
             else:
                 soft_optimal_moves[upcard][value] = "DD"
     return pd.DataFrame(soft_optimal_moves)
+
+def create_split_EV_dict(dealer_upcards: list) -> dict:
+    """
+    Create a dictionary of the expected values for splitting.
+
+    :param dealer_upcards: List of dealer upcard values.
+    :return: Dictionary mapping each upcard to its optimal expected value for splits.
+    """
+    split_dict = {}
+    for upcard in dealer_upcards:
+        upcard_value = 11 if upcard == 'A' else int(upcard)
+        split_dict[upcard] = split_EV(upcard_value)
+    return split_dict
+
+def create_split_EV_table(dealer_upcards: list) -> pd.DataFrame:
+    return pd.DataFrame(create_split_EV_dict(dealer_upcards))
+
+def create_split_optimal_table(dealer_upcards: list) -> pd.DataFrame:
+    optimal_dict = create_optimal_dict(dealer_upcards)
+    split_dict = create_split_EV_dict(dealer_upcards)
+    final_dict = {}
+    for upcard in dealer_upcards:
+        final_dict[upcard] = {}
+        for i in range(2, 12):
+            if split_dict[upcard][i] > (optimal_dict[upcard][i*2] if i != 11 else optimal_dict[upcard][i]):
+                final_dict[upcard][i] = "S"
+            else:
+                final_dict[upcard][i] = "_"
+    return pd.DataFrame(final_dict)
+                

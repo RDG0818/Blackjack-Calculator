@@ -124,3 +124,32 @@ def soft_hit_EV(dealer_upcard: int, double_down = False) -> dict:
                 total += (1/13 * prob) if card != 10 else (4/13 * prob)
         soft_hit_EV[player_value] = total if not double_down else total * 2
     return soft_hit_EV
+
+def split_EV(dealer_upcard: int) -> dict:
+    s_EV = stand_EV(dealer_upcard)
+    h_EV = hit_EV(dealer_upcard)
+    s_h_EV = soft_hit_EV(dealer_upcard)
+    split_EV = {}
+    
+    for card in range(2, 12):
+        total = 0
+        if card != 11:
+            for hand_1_card_2 in range(2, 12):
+                for hand_2_card_2 in range(2, 12):
+                    hand_1_prob = max(s_EV[card + hand_1_card_2], h_EV[card + hand_1_card_2]) if hand_1_card_2 != 11 else max(s_EV[card + hand_1_card_2], s_h_EV[card + hand_1_card_2])
+                    hand_2_prob = max(s_EV[card + hand_2_card_2], h_EV[card + hand_2_card_2]) if hand_2_card_2 != 11 else max(s_EV[card + hand_2_card_2], s_h_EV[card + hand_2_card_2])
+                    hand_1_prob = hand_1_prob * 4 if hand_1_card_2 == 10 else hand_1_prob
+                    hand_2_prob = hand_2_prob * 4 if hand_2_card_2 == 10 else hand_2_prob
+                    total += (hand_1_prob + hand_2_prob)/169
+        else:
+            for hand_1_card_2 in range(1, 11):
+                for hand_2_card_2 in range(1, 11):
+                    hand_1_prob = max(s_EV[card + hand_1_card_2], s_h_EV[card + hand_1_card_2])
+                    hand_2_prob = max(s_EV[card + hand_2_card_2], s_h_EV[card + hand_2_card_2])
+                    hand_1_prob = hand_1_prob * 4 if hand_1_card_2 == 10 else hand_1_prob
+                    hand_2_prob = hand_2_prob * 4 if hand_2_card_2 == 10 else hand_2_prob
+                    total += (hand_1_prob + hand_2_prob)/169
+        
+        split_EV[card] = total
+    
+    return split_EV
