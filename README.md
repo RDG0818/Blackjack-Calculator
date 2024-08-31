@@ -44,7 +44,6 @@ This Python project is designed to simulate and analyze the probabilities of var
 
 - **Infinite Deck**: Both the Monte Carlo simulations and the probability functions assume an infinite deck size.
 - **Dealer Stands on Soft 17**: The dealer does not hit on soft 17.
-- **No Splits**: Splits are not included in the current calculations (to be added later).
 
 ## Installation
 
