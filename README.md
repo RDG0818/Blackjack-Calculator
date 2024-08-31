@@ -35,15 +35,9 @@ This Python project is designed to simulate and analyze the probabilities of var
    Functions create Pandas DataFrames for visualizing strategy decisions based on different game scenarios.
    ```python
    dealer_upcards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'A']
-   create_dealer_prob_dist_table(dealer_upcards: list) # Create a probability distribution table for the dealer's possible outcomes.
-   create_dealer_prob_table(dealer_upcards: list) # Create a probability table for the dealer's outcomes.
-   create_stand_EV_table(dealer_upcards: list) # Create a table of expected values for standing with each dealer upcard.
-   create_hit_EV_table(dealer_upcards: list) # Create a table of expected values for hitting with each dealer upcard.
-   create_soft_hit_EV_table(dealer_upcards: list) # Create a table of expected values for hitting with a soft hand and each dealer upcard.
-   create_optimal_values_table(dealer_upcards: list) # Create a table of optimal expected values for each dealer upcard.
-   create_optimal_table(dealer_upcards: list) # Create a table of optimal moves (Stand or Hit) for each dealer upcard.
-   create_soft_optimal_values_table(dealer_upcards: list) # Create a table of optimal expected values for soft hands and each dealer upcard.
-   create_soft_optimal_table(dealer_upcards: list) # Create a table of optimal moves (Stand or Hit) for soft hands and each dealer upcard.
+   create_optimal_table(dealer_upcards)
+   create_soft_optimal_table(dealer_upcards)
+   create_split_optimal_table(dealer_upcards)
    ```
    
 ## Constraints
