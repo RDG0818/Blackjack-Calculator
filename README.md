@@ -1,4 +1,4 @@
-# Blackjack Probability Calculator (WIP)
+# Blackjack Probability Calculator
 
 This Python project is designed to simulate and analyze the probabilities of various decisions in the game of Blackjack. This project includes several key components aimed at different aspects of Blackjack simulation and strategy evaluation.
 
@@ -68,10 +68,6 @@ This Python project is designed to simulate and analyze the probabilities of var
     ```sh
     pip install -r requirements.txt
   
-## Future Development
-
-- **Double Downs and Splits**: Adding functionality to handle double downs and splits in the calculations.
-- **Mobile App**: Developing a mobile app using Swift and SwiftUI to turn this calculator into an interactive training tool for Blackjack players.
 
 ## Contributing
 Contributions are welcome! Please fork the repository and submit pull requests with your enhancements or bug fixes.
